@@ -3,6 +3,7 @@ import "./index.css";
 import todosList from "./todos.json";
 import { Route, NavLink } from "react-router-dom";
 import TodoList from "./TodoList";
+import { connect } from "react-redux";
 
 class App extends Component {
   state = {
@@ -132,4 +133,11 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    todos: state.todos
+  };
+};
+
+connect();
+export default connect(mapStateToProps)(App);
