@@ -4,6 +4,7 @@ import todosList from "./todos.json";
 import { Route, NavLink } from "react-router-dom";
 import TodoList from "./TodoList";
 import { connect } from "react-redux";
+import { addTodo, clearCompletedTodo } from "./action";
 
 class App extends Component {
   state = {
@@ -12,47 +13,14 @@ class App extends Component {
 
   handleCreate = event => {
     if (event.key === "Enter") {
-      const newTodo = {
-        userId: 1,
-        id: Math.floor(Math.random() * 100000000),
-        title: event.target.value,
-        completed: false
-      };
-      const newTodoList = [...this.state.todos];
-      newTodoList.push(newTodo);
-      this.setState({ todos: newTodoList });
+      this.props.addTodo(event.target.value);
       event.target.value = "";
     }
   };
 
-  handleToggleTodo = (event, todoIdToToggle) => {
-    const newTodoList = this.state.todos.map(todo => {
-      if (todo.id === todoIdToToggle) {
-        return { ...todo, completed: !todo.completed };
-      }
-      return todo;
-    });
-    this.setState({ todos: newTodoList });
-  };
-
-  handleDeleteTodo = (event, todoIdToDelete) => {
-    const newTodoList = this.state.todos.filter(todo => {
-      if (todo.id === todoIdToDelete) {
-        return false;
-      }
-      return true;
-    });
-    this.setState({ todos: newTodoList });
-  };
 
   handleDeleteCompletedTodo = event => {
-    const newTodoList = this.state.todos.filter(todo => {
-      if (todo.completed === true) {
-        return false;
-      }
-      return true;
-    });
-    this.setState({ todos: newTodoList });
+  this.props.clearCompletedTodo();
   };
 
   render() {
@@ -69,23 +37,17 @@ class App extends Component {
         </header>
         <Route exact path="/">
           <TodoList
-            handleToggleTodo={this.handleToggleTodo}
-            handleDeleteTodo={this.handleDeleteTodo}
-            todos={this.state.todos}
+            todos={this.props.todos}
           />
         </Route>
         <Route exact path="/active">
           <TodoList
-            handleToggleTodo={this.handleToggleTodo}
-            handleDeleteTodo={this.handleDeleteTodo}
-            todos={this.state.todos.filter(todo => todo.completed === false)}
+            todos={this.props.todos.filter(todo => todo.completed === false)}
           />
         </Route>
         <Route exact path="/completed">
           <TodoList
-            handleToggleTodo={this.handleToggleTodo}
-            handleDeleteTodo={this.handleDeleteTodo}
-            todos={this.state.todos.filter(todo => todo.completed === true)}
+            todos={this.props.todos.filter(todo => todo.completed === true)}
           />
         </Route>
         <footer className="footer">
@@ -139,5 +101,9 @@ const mapStateToProps = state => {
   };
 };
 
-connect();
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = {
+    addTodo,
+    clearCompletedTodo,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
